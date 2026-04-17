@@ -39,5 +39,11 @@ class DatabaseSeeder extends Seeder
             'is_verified_seller' => false,
             'total_co2_saved'    => 11.50,
         ]);
+
+        $this->call([
+            CategorySeeder::class,
+            ItemSeeder::class,
+        ]);
     }
+
 }
