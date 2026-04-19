@@ -2,20 +2,24 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CO2Controller;
+use App\Http\Controllers\ItemController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
-});
+    return view('home');
+})->name('home');
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+// Route::get('/', function () {
+//     return view('home');
+// })->middleware(['auth', 'verified'])->name('dashboard');
 
 // [PBI-01] Admin Routes to define and manage CO2 constants
 Route::post('/admin/categories', [CO2Controller::class, 'addCategory']);
 Route::put('/admin/categories/{id}/co2-constant', [CO2Controller::class, 'updateCategoryCO2']);
 Route::delete('/admin/categories/{id}', [CO2Controller::class, 'deleteCategory']);
+
+// Marketplace
+Route::get('/marketplace', [ItemController::class, 'index'])->name('marketplace.index');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
