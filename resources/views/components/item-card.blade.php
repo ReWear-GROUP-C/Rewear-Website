@@ -15,10 +15,8 @@
         {{-- CO2 badge --}}
         <div class="absolute top-2.5 left-2.5 flex items-center gap-1.5 bg-emerald-950 text-emerald-300 text-[11px] font-medium px-3 py-1 rounded-full tracking-wide">
             <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 flex-shrink-0"></span>
-            SAVED {{ (float) $item->category?->co2_constant?? '0' }}KG CO2
+            SAVED {{ (float) $item->category?->co2_constant ?? '0' }}KG CO2
         </div>
-
-        
     </div>
 
     {{-- Body --}}
@@ -37,7 +35,7 @@
             {{ $item->user?->city ?? 'Indonesia' }} &middot; Size {{ $item->size ?? '—' }}
         </p>
 
-        {{-- Collection tag --}}
+        {{-- Condition tag --}}
         @if($item->condition === 'new_with_tags')
             <span class="text-[10px] font-medium uppercase tracking-widest px-2 py-0.5 rounded-full bg-orange-100 text-orange-800">New With Tags</span>
         @elseif($item->condition === 'like_new')
@@ -45,5 +43,17 @@
         @else
             <span class="text-[10px] font-medium uppercase tracking-widest px-2 py-0.5 rounded-full bg-stone-100 text-stone-500">{{ str_replace('_', ' ', $item->condition) }}</span>
         @endif
+
+        {{-- Buy Now --}}
+        @auth
+        <form action="{{ route('orders.store') }}" method="POST">
+            @csrf
+            <input type="hidden" name="item_id" value="{{ $item->id }}">
+            <button type="submit"
+                class="mt-3 flex items-center justify-center w-full bg-emerald-900 hover:bg-emerald-800 text-white text-xs font-medium py-2 rounded-full transition-colors duration-200">
+                Buy Now
+            </button>
+        </form>
+        @endauth
     </div>
 </div>
