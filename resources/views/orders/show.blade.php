@@ -1,126 +1,118 @@
 @extends('layouts.app')
-@section('title', 'Order #'.$order->id)
+@section('title', 'Order Review #'.$order->id)
 
 @section('content')
-<div class="max-w-2xl mx-auto px-4 py-10">
-
-    {{-- Header --}}
-    <div class="mb-6">
-        <p class="text-[11px] font-medium uppercase tracking-widest text-stone-400 mb-1">Order Flow</p>
-        <h1 class="text-2xl font-bold text-stone-900">Order <span class="font-mono">#{{ $order->id }}</span></h1>
+<main class="pt-10 pb-24 px-4 max-w-[900px] mx-auto min-h-screen">
+    <div class="mb-8">
+        <p class="text-[11px] font-medium uppercase tracking-widest text-stone-400 mb-1">Order #{{ $order->id }}</p>
+        <h1 class="text-3xl font-extrabold tracking-tight text-stone-900 mb-2">Order Review</h1>
+        <p class="text-stone-500 font-medium">Verify your selection and contribution to the circular economy.</p>
     </div>
 
-    {{-- Status Pipeline --}}
-    <div class="rounded-2xl bg-white border border-stone-200 p-5 mb-4">
-        <p class="text-[11px] font-medium uppercase tracking-widest text-stone-400 mb-3">Status</p>
-        <div class="flex items-center gap-2">
-            @foreach(['pending', 'payment_confirmed', 'shipped', 'completed'] as $step)
-                <div class="flex items-center gap-2 flex-1">
-                    <div class="flex flex-col items-center">
-                        <div class="w-3 h-3 rounded-full {{ $order->status === $step || (array_search($order->status, ['pending','payment_confirmed','shipped','completed']) >= array_search($step, ['pending','payment_confirmed','shipped','completed'])) ? 'bg-emerald-900' : 'bg-stone-200' }}"></div>
-                        <p class="text-[9px] font-medium uppercase tracking-wide mt-1 {{ $order->status === $step ? 'text-emerald-900' : 'text-stone-400' }}">
-                            {{ str_replace('_', ' ', $step) }}
-                        </p>
+    <div class="flex flex-col gap-8">
+        
+        <div class="bg-white p-6 md:p-8 rounded-2xl border border-stone-200 shadow-sm">
+            <h3 class="text-xl font-bold text-emerald-900 mb-6">Order Status</h3>
+            <div class="flex items-center gap-2">
+                @foreach(['pending', 'payment_confirmed', 'shipped', 'completed'] as $step)
+                    <div class="flex items-center gap-2 flex-1">
+                        <div class="flex flex-col items-center">
+                            <div class="w-3 h-3 rounded-full {{ $order->status === $step || (array_search($order->status, ['pending','payment_confirmed','shipped','completed']) >= array_search($step, ['pending','payment_confirmed','shipped','completed'])) ? 'bg-emerald-900' : 'bg-stone-200' }}"></div>
+                            <p class="text-[9px] font-bold uppercase tracking-wide mt-2 {{ $order->status === $step || (array_search($order->status, ['pending','payment_confirmed','shipped','completed']) >= array_search($step, ['pending','payment_confirmed','shipped','completed'])) ? 'text-emerald-900' : 'text-stone-400' }}">
+                                {{ str_replace('_', ' ', $step) }}
+                            </p>
+                        </div>
+                        @if(!$loop->last)
+                            <div class="h-px flex-1 mb-4 {{ array_search($order->status, ['pending','payment_confirmed','shipped','completed']) > array_search($step, ['pending','payment_confirmed','shipped','completed']) ? 'bg-emerald-900' : 'bg-stone-200' }}"></div>
+                        @endif
                     </div>
-                    @if(!$loop->last)
-                        <div class="h-px flex-1 mb-3 {{ array_search($order->status, ['pending','payment_confirmed','shipped','completed']) > array_search($step, ['pending','payment_confirmed','shipped','completed']) ? 'bg-emerald-900' : 'bg-stone-200' }}"></div>
-                    @endif
-                </div>
-            @endforeach
+                @endforeach
+            </div>
         </div>
-    </div>
 
-    {{-- Item + Parties Grid --}}
-    <div class="grid grid-cols-2 gap-4 mb-4">
-
-        {{-- Item Card --}}
-        <div class="rounded-2xl bg-white border border-stone-200 p-4">
-            <p class="text-[11px] font-medium uppercase tracking-widest text-stone-400 mb-3">Item</p>
-            <div class="flex gap-3">
-                @if($order->item->first_photo)
-                    <img src="{{ asset('storage/'.$order->item->first_photo) }}"
-                         class="w-16 h-16 object-cover rounded-xl flex-shrink-0">
-                @endif
-                <div>
-                    <p class="text-sm font-semibold text-stone-900 leading-snug mb-1">{{ $order->item->item_name }}</p>
-
-                    {{-- Condition badge --}}
-                    @if($order->item->condition === 'new_with_tags')
-                        <span class="text-[10px] font-medium uppercase tracking-widest px-2 py-0.5 rounded-full bg-orange-100 text-orange-800">New With Tags</span>
-                    @elseif($order->item->condition === 'like_new')
-                        <span class="text-[10px] font-medium uppercase tracking-widest px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">Like New</span>
+        <section class="bg-white p-6 md:p-8 rounded-2xl border border-stone-200 shadow-sm">
+            <div class="flex items-center gap-3 mb-6">
+                <span class="material-symbols-outlined text-emerald-900">inventory_2</span>
+                <h2 class="text-xl font-bold text-emerald-900">Review Items</h2>
+            </div>
+            
+            <div class="bg-stone-50 p-4 rounded-xl flex gap-6 items-center border border-stone-100">
+                <div class="w-24 h-32 rounded-lg overflow-hidden bg-stone-200 flex-shrink-0">
+                    @if($order->item->first_photo)
+                        <img src="{{ asset('storage/'.$order->item->first_photo) }}" alt="{{ $order->item->item_name }}" class="w-full h-full object-cover">
                     @else
-                        <span class="text-[10px] font-medium uppercase tracking-widest px-2 py-0.5 rounded-full bg-stone-100 text-stone-500">{{ str_replace('_', ' ', $order->item->condition) }}</span>
+                        <div class="w-full h-full flex items-center justify-center text-stone-400">
+                            <span class="material-symbols-outlined">image</span>
+                        </div>
                     @endif
+                </div>
+                <div class="flex-grow">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h3 class="font-bold text-lg text-stone-900">{{ $order->item->item_name }}</h3>
+                            <p class="text-sm text-stone-500 capitalize">Condition: {{ str_replace('_', ' ', $order->item->condition) }}</p>
+                            <div class="mt-2 flex items-center gap-2">
+                                <span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 text-[10px] font-bold rounded-full uppercase tracking-wider">Living Archive</span>
+                            </div>
+                        </div>
+                        <p class="font-bold text-emerald-900">Rp {{ number_format($order->item->price, 0, ',', '.') }}</p>
+                    </div>
+                    <div class="mt-4 flex items-center justify-between">
+                        <p class="text-xs text-stone-500">Seller: {{ $order->seller?->name }}</p>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-                    <p class="text-sm font-bold text-emerald-900 mt-2">
-                        Rp {{ number_format($order->total_price, 0, ',', '.') }}
-                    </p>
+        <div class="bg-emerald-950 text-emerald-50 p-8 rounded-2xl shadow-lg relative overflow-hidden">
+            <div class="absolute top-0 right-0 opacity-10 transform translate-x-1/4 -translate-y-1/4">
+                <span class="material-symbols-outlined text-[160px] text-emerald-300">eco</span>
+            </div>
+            <div class="relative z-10">
+                <div class="flex items-center gap-2 mb-4">
+                    <h3 class="font-bold text-sm uppercase tracking-widest text-emerald-300">Environmental Impact</h3>
+                </div>
+                <div class="mb-6">
+                    <p class="text-5xl font-black text-white mb-2">{{ $order->co2_saved_amount }} kg</p>
+                    <p class="text-emerald-300 text-lg font-bold">CO2 Saved</p>
+                </div>
+                <p class="text-sm leading-relaxed text-emerald-200/80 max-w-2xl">
+                    By choosing this pre-loved item, you've saved the equivalent emissions of driving 50km. You are actively extending the life cycle of a premium garment.
+                </p>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 md:p-8 rounded-2xl border border-stone-200 shadow-sm">
+            <h3 class="text-xl font-bold text-emerald-900 mb-6">Summary</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="space-y-4">
+                    <div class="flex justify-between text-stone-600">
+                        <span>Subtotal</span>
+                        <span class="font-medium">Rp {{ number_format($order->total_price, 0, ',', '.') }}</span>
+                    </div>
+                    <div class="flex justify-between text-stone-600">
+                        <span>Carbon Offset</span>
+                        <span class="text-emerald-600 font-medium">Free</span>
+                    </div>
+                    <div class="h-px bg-stone-200 my-4"></div>
+                    <div class="flex justify-between items-baseline">
+                        <span class="font-bold text-stone-900 text-lg">Total</span>
+                        <span class="text-2xl font-black text-emerald-900">Rp {{ number_format($order->total_price, 0, ',', '.') }}</span>
+                    </div>
+                </div>
+                
+                <div class="space-y-4 flex flex-col justify-center">
+                    @if(Auth::id() === $order->buyer_id && $order->status === 'pending')
+                        <button class="w-full py-3.5 bg-emerald-900 text-white font-bold rounded-full text-sm shadow-md hover:bg-emerald-800 transition-colors">
+                            Complete Purchase
+                        </button>
+                    @endif
+                    <a href="/" class="w-full py-3.5 bg-transparent border-2 border-stone-200 text-stone-600 font-bold rounded-full text-sm hover:bg-stone-50 transition-colors text-center block">
+                        Back to Marketplace
+                    </a>
                 </div>
             </div>
         </div>
-
-        {{-- Parties Card --}}
-        <div class="rounded-2xl bg-white border border-stone-200 p-4 flex flex-col gap-4">
-            <div>
-                <p class="text-[11px] font-medium uppercase tracking-widest text-stone-400 mb-1">Buyer</p>
-                <p class="text-sm font-semibold text-stone-900">{{ $order->buyer?->name }}</p>
-            </div>
-            <div>
-                <p class="text-[11px] font-medium uppercase tracking-widest text-stone-400 mb-1">Seller</p>
-                <p class="text-sm font-semibold text-stone-900">{{ $order->seller?->name }}</p>
-            </div>
-            @if($order->payment_reference)
-            <div>
-                <p class="text-[11px] font-medium uppercase tracking-widest text-stone-400 mb-1">Payment Ref</p>
-                <p class="text-xs font-mono text-stone-600">{{ $order->payment_reference }}</p>
-            </div>
-            @endif
-        </div>
     </div>
-
-    {{-- CO2 Saved Badge --}}
-    <div class="rounded-2xl bg-emerald-950 px-5 py-4 mb-4 flex items-center gap-3">
-        <span class="w-2 h-2 rounded-full bg-emerald-400 flex-shrink-0"></span>
-        <p class="text-emerald-300 text-sm font-medium tracking-wide">
-            🌱 You saved <strong>{{ $order->co2_saved_amount }}kg CO2</strong> with this purchase!
-        </p>
-    </div>
-
-    {{-- Action Buttons --}}
-    <div class="flex flex-wrap gap-3">
-        @if(Auth::id() === $order->buyer_id && $order->status === 'pending')
-            <a href="#"
-               class="flex-1 flex items-center justify-center bg-emerald-900 hover:bg-emerald-800 text-white text-sm font-medium py-2.5 rounded-full transition-colors duration-200">
-                Confirm Payment →
-            </a>
-        @endif
-
-        @if(Auth::id() === $order->users_id && $order->status === 'payment_confirmed')
-            <form method="POST" action="#" class="flex-1">
-                @csrf
-                <button type="submit"
-                    class="w-full flex items-center justify-center bg-emerald-900 hover:bg-emerald-800 text-white text-sm font-medium py-2.5 rounded-full transition-colors duration-200">
-                    Mark as Shipped
-                </button>
-            </form>
-        @endif
-
-        @if(Auth::id() === $order->buyer_id && $order->status === 'shipped')
-            <form method="POST" action="#" class="flex-1">
-                @csrf
-                <button type="submit"
-                    class="w-full flex items-center justify-center bg-emerald-900 hover:bg-emerald-800 text-white text-sm font-medium py-2.5 rounded-full transition-colors duration-200">
-                    Confirm Received
-                </button>
-            </form>
-        @endif
-
-        <a href="#"
-           class="flex items-center justify-center border border-stone-200 text-stone-600 hover:bg-stone-50 text-sm font-medium px-6 py-2.5 rounded-full transition-colors duration-200">
-            All Transactions
-        </a>
-    </div>
-
-</div>
+</main>
 @endsection
