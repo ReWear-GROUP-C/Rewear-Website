@@ -13,11 +13,15 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
+            $table->string('name', 45);
+            $table->string('email', 45)->unique();
             $table->string('password');
+            $table->enum('role', ['admin', 'user'])->default('user');
+            $table->boolean('is_verified_seller')->default(false);
+            $table->decimal('total_co2_saved', 10, 2)->default(0.00);
+            $table->timestamp('email_verified_at')->nullable();
             $table->rememberToken();
+            $table->softDeletes();
             $table->timestamps();
         });
 
