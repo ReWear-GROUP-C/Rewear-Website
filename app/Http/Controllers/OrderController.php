@@ -10,11 +10,12 @@ use Illuminate\Support\Facades\DB;
 
 class OrderController extends Controller
 {
-public function store(Request $request)
+    public function store(Request $request)
     {
         $request->validate(['item_id' => 'required|exists:items,id']);
 
-        $item = Item::findOrFail($request->item_id);
+        // Load the item and its category to get the CO2 constant
+        $item = Item::with('category')->findOrFail($request->item_id);
 
         // Cannot buy own item
         if ($item->users_id === Auth::id()) {
@@ -36,13 +37,17 @@ public function store(Request $request)
             return redirect()->route('orders.show', $existing)->with('info', 'You already have a pending order for this item.');
         }
 
-        $order = DB::transaction(function () use ($item) {
+        // Grab the CO2 constant from the category
+        $co2Saved = $item->category->co2_constant ?? 0;
+
+        $order = DB::transaction(function () use ($item, $co2Saved) {
             $order = Order::create([
-                'buyer_id'   => Auth::id(),
-                'item_id'    => $item->id,
-                'status'     => 'pending',
-                'total_price'=> $item->price,
-                'users_id'   => $item->users_id,
+                'buyer_id'         => Auth::id(),
+                'item_id'          => $item->id,
+                'status'           => 'pending',
+                'total_price'      => $item->price,
+                'users_id'         => $item->users_id,
+                'co2_saved_amount' => $co2Saved, 
             ]);
             $item->update(['status' => 'reserved']);
             return $order;
