@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
-use App\Models\Order; // 1. YOU NEED THIS LINE TO ACCESS THE DATABASE
+use App\Models\Order; 
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -17,13 +17,13 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): View
     {
-        // 2. YOU NEED THIS MATH TO FIX THE ERROR
+    
         $totalCo2Saved = Order::where('buyer_id', $request->user()->id)
                               ->sum('co2_saved_amount');
 
         return view('profile.edit', [
             'user' => $request->user(),
-            'totalCo2Saved' => $totalCo2Saved, // 3. PASS IT TO THE VIEW
+            'totalCo2Saved' => $totalCo2Saved, 
         ]);
     }
 
