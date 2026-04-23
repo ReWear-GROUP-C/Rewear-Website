@@ -60,28 +60,5 @@ class User extends Authenticatable
         return $this->hasMany(Order::class, 'users_id');
     }
 
-    public function posts()
-    {
-        return $this->hasMany(Post::class, 'users_id');
-    }
 
-    public function votes()
-    {
-        return $this->hasMany(Vote::class, 'users_id');
-    }
-
-    public function comments()
-    {
-        return $this->hasMany(Comment::class, 'users_id');
-    }
-
-    public function favorites()
-    {
-        return $this->belongsToMany(Item::class, 'favorites', 'users_id', 'item_id')->withTimestamps();
-    }
-
-    public function sellerVerification()
-    {
-        return $this->hasOne(SellerVerification::class, 'user_id');
-    }
 }
