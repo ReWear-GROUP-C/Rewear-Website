@@ -44,16 +44,30 @@
             <span class="text-[10px] font-medium uppercase tracking-widest px-2 py-0.5 rounded-full bg-stone-100 text-stone-500">{{ str_replace('_', ' ', $item->condition) }}</span>
         @endif
 
-        {{-- Buy Now --}}
+        {{-- Buy Now / View Order --}}
         @auth
-        <form action="{{ route('orders.store') }}" method="POST">
-            @csrf
-            <input type="hidden" name="item_id" value="{{ $item->id }}">
-            <button type="submit"
-                class="mt-3 flex items-center justify-center w-full bg-emerald-900 hover:bg-emerald-800 text-white text-xs font-medium py-2 rounded-full transition-colors duration-200">
-                Buy Now
-            </button>
-        </form>
+            @php
+                $existingOrder = \App\Models\Order::where('buyer_id', auth()->id())
+                    ->where('item_id', $item->id)
+                    ->where('status', 'pending')
+                    ->first();
+            @endphp
+
+            @if($existingOrder)
+                <a href="{{ route('orders.show', $existingOrder) }}"
+                    class="mt-3 flex items-center justify-center w-full bg-stone-700 hover:bg-stone-600 text-white text-xs font-medium py-2 rounded-full transition-colors duration-200">
+                    View Order →
+                </a>
+            @else
+                <form action="{{ route('orders.store') }}" method="POST">
+                    @csrf
+                    <input type="hidden" name="item_id" value="{{ $item->id }}">
+                    <button type="submit"
+                        class="mt-3 flex items-center justify-center w-full bg-emerald-900 hover:bg-emerald-800 text-white text-xs font-medium py-2 rounded-full transition-colors duration-200">
+                        Buy Now
+                    </button>
+                </form>
+            @endif
         @endauth
     </div>
 </div>

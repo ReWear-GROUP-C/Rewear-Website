@@ -43,8 +43,6 @@
                 @endif
                 <div>
                     <p class="text-sm font-semibold text-stone-900 leading-snug mb-1">{{ $order->item->item_name }}</p>
-
-                    {{-- Condition badge --}}
                     @if($order->item->condition === 'new_with_tags')
                         <span class="text-[10px] font-medium uppercase tracking-widest px-2 py-0.5 rounded-full bg-orange-100 text-orange-800">New With Tags</span>
                     @elseif($order->item->condition === 'like_new')
@@ -52,7 +50,6 @@
                     @else
                         <span class="text-[10px] font-medium uppercase tracking-widest px-2 py-0.5 rounded-full bg-stone-100 text-stone-500">{{ str_replace('_', ' ', $order->item->condition) }}</span>
                     @endif
-
                     <p class="text-sm font-bold text-emerald-900 mt-2">
                         Rp {{ number_format($order->total_price, 0, ',', '.') }}
                     </p>
@@ -83,17 +80,27 @@
     <div class="rounded-2xl bg-emerald-950 px-5 py-4 mb-4 flex items-center gap-3">
         <span class="w-2 h-2 rounded-full bg-emerald-400 flex-shrink-0"></span>
         <p class="text-emerald-300 text-sm font-medium tracking-wide">
-            🌱 You saved <strong>{{ $order->co2_saved_amount }}kg CO2</strong> with this purchase!
+            You saved <strong>{{ number_format($order->co2_saved_amount, 1) }}kg CO2</strong> with this purchase!
         </p>
     </div>
 
     {{-- Action Buttons --}}
     <div class="flex flex-wrap gap-3">
+
         @if(Auth::id() === $order->buyer_id && $order->status === 'pending')
-            <a href="#"
+            <a href="{{ route('orders.payment', $order) }}"
                class="flex-1 flex items-center justify-center bg-emerald-900 hover:bg-emerald-800 text-white text-sm font-medium py-2.5 rounded-full transition-colors duration-200">
                 Confirm Payment →
             </a>
+
+            <form method="POST" action="{{ route('orders.cancel', $order) }}">
+                @csrf
+                @method('DELETE')
+                <button type="submit"
+                    class="flex items-center justify-center border border-red-200 text-red-500 hover:bg-red-50 text-sm font-medium px-6 py-2.5 rounded-full transition-colors duration-200">
+                    Cancel Order
+                </button>
+            </form>
         @endif
 
         @if(Auth::id() === $order->users_id && $order->status === 'payment_confirmed')
@@ -116,10 +123,13 @@
             </form>
         @endif
 
-        <a href="#"
-           class="flex items-center justify-center border border-stone-200 text-stone-600 hover:bg-stone-50 text-sm font-medium px-6 py-2.5 rounded-full transition-colors duration-200">
-            All Transactions
-        </a>
+        @if($order->status !== 'pending')
+            <a href="{{ route('marketplace.index') }}"
+               class="flex items-center justify-center border border-stone-200 text-stone-600 hover:bg-stone-50 text-sm font-medium px-6 py-2.5 rounded-full transition-colors duration-200">
+                All Transactions
+            </a>
+        @endif
+
     </div>
 
 </div>
