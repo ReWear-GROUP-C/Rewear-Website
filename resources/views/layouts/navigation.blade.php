@@ -24,7 +24,7 @@
                         </form>
                     </div>
                     
-                    <a href="#" class="w-9 h-9 rounded-full bg-stone-100 border border-stone-200 flex items-center justify-center text-primary hover:bg-stone-200 transition-all group overflow-hidden">
+                    <a href="{{ route('profile.edit') }}" class="w-9 h-9 rounded-full bg-stone-100 border border-stone-200 flex items-center justify-center text-primary hover:bg-stone-200 transition-all group overflow-hidden">
                         @if(Auth::user()->profile_photo_path)
                             <img src="{{ Auth::user()->profile_photo_path }}" alt="Profile" class="w-full h-full object-cover">
                         @else
