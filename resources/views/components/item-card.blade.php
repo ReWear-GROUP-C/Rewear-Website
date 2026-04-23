@@ -1,5 +1,4 @@
-<div class="rounded-2xl overflow-hidden bg-white border border-stone-200 hover:-translate-y-0.5 transition-transform duration-200 cursor-pointer">
-
+<div class="rounded-2xl overflow-hidden bg-white border border-stone-200 hover:-translate-y-0.5 transition-transform duration-200 cursor-pointer flex flex-col">
     {{-- Image --}}
     <div class="relative" style="aspect-ratio:3/4;">
         @if($item->first_photo)
@@ -20,7 +19,7 @@
     </div>
 
     {{-- Body --}}
-    <div class="px-3.5 py-3">
+    <div class="px-3.5 py-3 flex flex-col flex-1">
         <div class="flex items-baseline justify-between gap-2 mb-1">
             <a href="#"
                class="text-sm font-medium text-stone-900 leading-snug hover:text-emerald-900 transition-colors line-clamp-2">
@@ -37,11 +36,11 @@
 
         {{-- Condition tag --}}
         @if($item->condition === 'new_with_tags')
-            <span class="text-[10px] font-medium uppercase tracking-widest px-2 py-0.5 rounded-full bg-orange-100 text-orange-800">New With Tags</span>
+            <span class="text-[10px] font-medium uppercase tracking-widest px-2 py-0.5 rounded-full bg-orange-100 text-orange-800 self-start mt-auto">New With Tags</span>
         @elseif($item->condition === 'like_new')
-            <span class="text-[10px] font-medium uppercase tracking-widest px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">Like New</span>
+            <span class="text-[10px] font-medium uppercase tracking-widest px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 self-start mt-auto">Like New</span>
         @else
-            <span class="text-[10px] font-medium uppercase tracking-widest px-2 py-0.5 rounded-full bg-stone-100 text-stone-500">{{ str_replace('_', ' ', $item->condition) }}</span>
+            <span class="text-[10px] font-medium uppercase tracking-widest px-2 py-0.5 rounded-full bg-stone-100 text-stone-500 self-start mt-auto">{{ str_replace('_', ' ', $item->condition) }}</span>
         @endif
 
         {{-- Buy Now --}}

@@ -33,5 +33,11 @@ Route::middleware('auth')->group(function () {
     // Route::get('/orders/{order}/confirmation', [OrderController::class, 'confirmation'])->name('orders.confirmation');
 });
 
+Route::middleware(['auth', 'seller'])->group(function () {
+    // items
+    Route::get('/items/create', [ItemController::class, 'create'])->name('items.create');
+    Route::post('/items', [ItemController::class, 'store'])->name('items.store');
+});
+
 
 require __DIR__.'/auth.php';
