@@ -38,6 +38,12 @@ Route::middleware('auth')->group(function () {
     Route::delete('/community/delete/{id}', [PostController::class, 'destroy'])->name('community.destroy');
 });
 
+Route::middleware(['auth', 'seller'])->group(function () {
+    // items
+    Route::get('/items/create', [ItemController::class, 'create'])->name('items.create');
+    Route::post('/items', [ItemController::class, 'store'])->name('items.store');
+});
+
 
 require __DIR__.'/auth.php';
 
