@@ -34,11 +34,17 @@ Route::middleware('auth')->group(function () {
     // Orders 
     Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
     Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
+
     // Route::get('/orders/{order}/confirmation', [OrderController::class, 'confirmation'])->name('orders.confirmation');
-    
+    Route::get('/orders/{order}/payment', [OrderController::class, 'paymentForm'])->name('orders.payment'); // ← ADD
+    Route::post('/orders/{order}/confirm-payment', [OrderController::class, 'confirmPayment'])->name('orders.confirmPayment');
+    Route::get('/orders/{order}/confirmed', [OrderController::class, 'confirmed'])->name('orders.confirmed');
+    Route::delete('/orders/{order}/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');  
+  
     Route::post('/community/create', [PostController::class, 'store'])->name('community.store');
     Route::put('/community/update/{id}', [PostController::class, 'update'])->name('community.update');
     Route::delete('/community/delete/{id}', [PostController::class, 'destroy'])->name('community.destroy');
+
 });
 
 Route::middleware(['auth', 'seller'])->group(function () {
