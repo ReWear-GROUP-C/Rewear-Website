@@ -34,6 +34,12 @@ class Item extends Model
         return $this->belongsTo(Category::class);
     }
 
+    public function getFirstPhotoAttribute(): ?string
+    {
+        $photos = $this->photo_path;
+        return $photos && count($photos) > 0 ? $photos[0] : null;
+    }
+
 
 
 }

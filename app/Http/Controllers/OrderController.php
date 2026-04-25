@@ -14,6 +14,7 @@ class OrderController extends Controller
     {
         $request->validate(['item_id' => 'required|exists:items,id']);
 
+        // Load the item and its category to get the CO2 constant
         $item = Item::with('category')->findOrFail($request->item_id);
 
         if ($item->users_id === Auth::id()) {
@@ -33,7 +34,7 @@ class OrderController extends Controller
             return redirect()->route('orders.show', $existing)->with('info', 'You already have a pending order for this item.');
         }
 
-        $order = DB::transaction(function () use ($item) {
+        $order = DB::transaction(function () use ($item, $co2Saved) {
             $order = Order::create([
                 'buyer_id'    => Auth::id(),
                 'item_id'     => $item->id,
