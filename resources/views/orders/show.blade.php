@@ -44,19 +44,19 @@
             <div class="bg-stone-50 p-4 rounded-xl flex gap-6 items-center border border-stone-100">
                 <div class="w-24 h-32 rounded-lg overflow-hidden bg-stone-200 flex-shrink-0">
                     @if($order->item->first_photo)
-                        <img src="{{ asset('storage/'.$order->item->first_photo) }}" alt="{{ $order->item->item_name }}" class="w-full h-full object-cover">
+                        <img src="{{ asset('storage/'.$order->item->first_photo) }}"
+                             alt="{{ $order->item->item_name }}"
+                             class="w-full h-full object-cover">
                     @else
-                        <div class="w-full h-full flex items-center justify-center text-stone-400">
-                            <span class="material-symbols-outlined">image</span>
-                        </div>
+                        <img src="/placeholder.jpg"
+                             alt="{{ $order->item->item_name }}"
+                             class="w-full h-full object-cover">
                     @endif
                 </div>
                 <div class="flex-grow">
                     <div class="flex justify-between items-start">
                         <div>
                             <h3 class="font-bold text-lg text-stone-900">{{ $order->item->item_name }}</h3>
-                            
-                            {{-- Condition Badges (From Diaz Logic) --}}
                             <div class="mt-1">
                                 @if($order->item->condition === 'new_with_tags')
                                     <span class="text-[10px] font-medium uppercase tracking-widest px-2 py-0.5 rounded-full bg-orange-100 text-orange-800">New With Tags</span>
@@ -114,7 +114,6 @@
                 </div>
                 
                 <div class="flex flex-col gap-3 justify-center">
-                    {{-- Logic from Diaz Branch --}}
                     @if(Auth::id() === $order->buyer_id && $order->status === 'pending')
                         <a href="{{ route('orders.payment', $order) }}"
                            class="w-full py-3.5 bg-emerald-900 text-white font-bold rounded-full text-sm shadow-md hover:bg-emerald-800 transition-colors text-center">
@@ -131,7 +130,7 @@
                     @endif
 
                     @if(Auth::id() === $order->users_id && $order->status === 'payment_confirmed')
-                        <form method="POST" action="#" class="w-full">
+                        <form method="POST" action="{{ route('orders.ship', $order) }}" class="w-full">
                             @csrf
                             <button type="submit" class="w-full py-3.5 bg-emerald-900 text-white font-bold rounded-full text-sm hover:bg-emerald-800 transition-colors">
                                 Mark as Shipped
@@ -140,7 +139,7 @@
                     @endif
 
                     @if(Auth::id() === $order->buyer_id && $order->status === 'shipped')
-                        <form method="POST" action="#" class="w-full">
+                        <form method="POST" action="{{ route('orders.receive', $order) }}" class="w-full">
                             @csrf
                             <button type="submit" class="w-full py-3.5 bg-emerald-900 text-white font-bold rounded-full text-sm hover:bg-emerald-800 transition-colors">
                                 Confirm Received
@@ -148,9 +147,11 @@
                         </form>
                     @endif
 
-                    <a href="{{ route('marketplace.index') }}" class="w-full py-3.5 bg-transparent border-2 border-stone-200 text-stone-600 font-bold rounded-full text-sm hover:bg-stone-50 transition-colors text-center block">
-                        Back to Marketplace
-                    </a>
+                    @if($order->status !== 'pending')
+                        <a href="{{ route('marketplace.index') }}" class="w-full py-3.5 bg-transparent border-2 border-stone-200 text-stone-600 font-bold rounded-full text-sm hover:bg-stone-50 transition-colors text-center block">
+                            Back to Marketplace
+                        </a>
+                    @endif
                 </div>
             </div>
         </div>
