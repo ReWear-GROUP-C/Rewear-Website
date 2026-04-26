@@ -13,10 +13,6 @@ Route::get('/', function () {
     return view('home');
 })->name('home');
 
-// Route::get('/', function () {
-//     return view('home');
-// })->middleware(['auth', 'verified'])->name('dashboard');
-
 // [PBI-01] Admin Routes to define and manage CO2 constants
 Route::post('/admin/categories', [CO2Controller::class, 'addCategory']);
 Route::put('/admin/categories/{id}/co2-constant', [CO2Controller::class, 'updateCategoryCO2']);
@@ -31,24 +27,22 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    // Orders 
+    // Orders
     Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
     Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
-
-    // Route::get('/orders/{order}/confirmation', [OrderController::class, 'confirmation'])->name('orders.confirmation');
-    Route::get('/orders/{order}/payment', [OrderController::class, 'paymentForm'])->name('orders.payment'); // ← ADD
+    Route::get('/orders/{order}/payment', [OrderController::class, 'paymentForm'])->name('orders.payment');
     Route::post('/orders/{order}/confirm-payment', [OrderController::class, 'confirmPayment'])->name('orders.confirmPayment');
     Route::get('/orders/{order}/confirmed', [OrderController::class, 'confirmed'])->name('orders.confirmed');
-    Route::delete('/orders/{order}/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');  
-  
+    Route::delete('/orders/{order}/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');
+    Route::post('/orders/{order}/ship', [OrderController::class, 'ship'])->name('orders.ship');       // ← NEW
+    Route::post('/orders/{order}/receive', [OrderController::class, 'receive'])->name('orders.receive'); // ← NEW
+
     Route::post('/community/create', [PostController::class, 'store'])->name('community.store');
     Route::put('/community/update/{id}', [PostController::class, 'update'])->name('community.update');
     Route::delete('/community/delete/{id}', [PostController::class, 'destroy'])->name('community.destroy');
-
 });
 
 Route::middleware(['auth', 'seller'])->group(function () {
-    // items
     Route::get('/items/create', [ItemController::class, 'create'])->name('items.create');
     Route::post('/items', [ItemController::class, 'store'])->name('items.store');
 });
@@ -60,7 +54,6 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/users/{user}', [AdminUserController::class, 'show'])->name('users.show');
     Route::delete('/users/{user}', [AdminUserController::class, 'destroy'])->name('users.destroy');
     Route::post('/users/{user}/restore', [AdminUserController::class, 'restore'])->name('users.restore');
-
 });
-require __DIR__.'/auth.php';
 
+require __DIR__.'/auth.php';

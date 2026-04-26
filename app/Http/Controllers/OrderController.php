@@ -14,7 +14,6 @@ class OrderController extends Controller
     {
         $request->validate(['item_id' => 'required|exists:items,id']);
 
-        // Load the item and its category to get the CO2 constant
         $item = Item::with('category')->findOrFail($request->item_id);
 
         if ($item->users_id === Auth::id()) {
@@ -34,13 +33,13 @@ class OrderController extends Controller
             return redirect()->route('orders.show', $existing)->with('info', 'You already have a pending order for this item.');
         }
 
-        $order = DB::transaction(function () use ($item, $co2Saved) {
+        $order = DB::transaction(function () use ($item) {
             $order = Order::create([
-                'buyer_id'    => Auth::id(),
-                'item_id'     => $item->id,
-                'status'      => 'pending',
-                'total_price' => $item->price,
-                'users_id'    => $item->users_id,
+                'buyer_id'         => Auth::id(),
+                'item_id'          => $item->id,
+                'status'           => 'pending',
+                'total_price'      => $item->price,
+                'users_id'         => $item->users_id,
                 'co2_saved_amount' => $item->category->co2_constant ?? 0,
             ]);
             $item->update(['status' => 'reserved']);
@@ -57,7 +56,7 @@ class OrderController extends Controller
         return view('orders.show', compact('order'));
     }
 
-    public function paymentForm(Order $order) // ← NEW
+    public function paymentForm(Order $order)
     {
         abort_unless($order->buyer_id === Auth::id(), 403);
         abort_unless($order->status === 'pending', 403);
@@ -94,6 +93,28 @@ class OrderController extends Controller
         $this->authorizeOrder($order);
         $order->load(['item.category', 'buyer', 'seller']);
         return view('orders.confirmed', compact('order'));
+    }
+
+    public function ship(Order $order) // ← NEW
+    {
+        abort_unless($order->users_id === Auth::id(), 403);
+        abort_unless($order->status === 'payment_confirmed', 403);
+
+        $order->update(['status' => 'shipped']);
+
+        return redirect()->route('orders.show', $order)->with('success', 'Shipment confirmed! Waiting for buyer to confirm received.');
+    }
+
+    public function receive(Order $order) // ← NEW
+    {
+        abort_unless($order->buyer_id === Auth::id(), 403);
+        abort_unless($order->status === 'shipped', 403);
+
+        DB::transaction(function () use ($order) {
+            $order->update(['status' => 'completed']);
+        });
+
+        return redirect()->route('orders.confirmed', $order)->with('success', 'Order completed!');
     }
 
     public function cancel(Order $order)
